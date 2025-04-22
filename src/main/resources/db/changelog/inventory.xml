@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+    <changeSet id="1745336393" author="Giorgi.Robitashvili">
+        <createTable tableName="book_inventory">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="book_id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="amount" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createSequence sequenceName="book_inventory_seq"/>
+
+        <addForeignKeyConstraint
+                baseTableName="book_inventory"
+                baseColumnNames="book_id"
+                constraintName="fk_book_inventory_book_id"
+                referencedTableName="books"
+                referencedColumnNames="id"
+                onDelete="CASCADE"/>
+
+    </changeSet>
+</databaseChangeLog>

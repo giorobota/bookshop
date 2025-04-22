@@ -1,0 +1,66 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+       http://www.liquibase.org/xml/ns/dbchangelog
+       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <changeSet id="insert-dummy-data" author="Giorgi.Robitashvili">
+
+        <!-- Insert Books -->
+        <insert tableName="books">
+            <column name="id" valueNumeric="1" />
+            <column name="title" value="Clean Code" />
+            <column name="author" value="Robert C. Martin" />
+            <column name="price" valueNumeric="49.99" />
+            <column name="type" value="REGULAR" />
+        </insert>
+
+        <insert tableName="books">
+            <column name="id" valueNumeric="2" />
+            <column name="title" value="Effective Java" />
+            <column name="author" value="Joshua Bloch" />
+            <column name="price" valueNumeric="59.99" />
+            <column name="type" value="NEW_RELEASE" />
+        </insert>
+
+        <insert tableName="books">
+            <column name="id" valueNumeric="3" />
+            <column name="title" value="Design Patterns" />
+            <column name="author" value="GoF" />
+            <column name="price" valueNumeric="39.99" />
+            <column name="type" value="OLD_EDITION" />
+        </insert>
+
+        <!-- Insert Inventory -->
+        <insert tableName="book_inventory">
+            <column name="id" valueNumeric="1" />
+            <column name="book_id" valueNumeric="1" />
+            <column name="amount" valueNumeric="10" />
+        </insert>
+
+        <insert tableName="book_inventory">
+            <column name="id" valueNumeric="2" />
+            <column name="book_id" valueNumeric="2" />
+            <column name="amount" valueNumeric="5" />
+        </insert>
+
+        <insert tableName="book_inventory">
+            <column name="id" valueNumeric="3" />
+            <column name="book_id" valueNumeric="3" />
+            <column name="amount" valueNumeric="7" />
+        </insert>
+
+        <!-- Insert Customers -->
+        <insert tableName="customers">
+            <column name="id" valueNumeric="1001" />
+            <column name="loyalty_points" valueNumeric="7" />
+        </insert>
+
+        <insert tableName="customers">
+            <column name="id" valueNumeric="1002" />
+            <column name="loyalty_points" valueNumeric="10" />
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>
