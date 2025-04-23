@@ -3,6 +3,7 @@ package org.demo.book.persistance.book;
 import org.demo.book.api.dto.OrderDto;
 import org.demo.book.api.dto.SingleBookPurchaseRequest;
 import org.demo.book.api.service.BookLoyaltyPointsPurchaseService;
+import org.demo.book.api.service.InventoryUpdateService;
 import org.demo.book.api.service.LoyaltyPointsDeductionService;
 import org.demo.book.api.service.OrderCreationService;
 import org.demo.book.persistance.BookType;
@@ -17,30 +18,28 @@ import java.util.List;
 class BookLoyaltyPointsPurchaseServiceImpl implements BookLoyaltyPointsPurchaseService {
 
     private final BookRepository bookRepository;
-    private final BookInventoryRepository bookInventoryRepository;
     private final OrderCreationService orderCreationService;
     private final LoyaltyPointsDeductionService loyaltyPointsDeductionService;
+    private final InventoryUpdateService inventoryUpdateService;
 
     public BookLoyaltyPointsPurchaseServiceImpl(
             BookRepository bookRepository,
-            BookInventoryRepository bookInventoryRepository,
             OrderCreationService orderCreationService,
-            LoyaltyPointsDeductionService loyaltyPointsDeductionService
+            LoyaltyPointsDeductionService loyaltyPointsDeductionService,
+            InventoryUpdateService inventoryUpdateService
     ) {
         this.bookRepository = bookRepository;
-        this.bookInventoryRepository = bookInventoryRepository;
         this.orderCreationService = orderCreationService;
         this.loyaltyPointsDeductionService = loyaltyPointsDeductionService;
+        this.inventoryUpdateService = inventoryUpdateService;
     }
 
     @Override
     @Transactional
     public OrderDto purchaseBooksWithLoyaltyPoints(Long clientId, List<SingleBookPurchaseRequest> books) {
-        books.forEach(purchaseRequest -> {
-            if (bookInventoryRepository.findByBookId(purchaseRequest.bookId()).getAmount() < purchaseRequest.amount()) {
-                throw new IllegalStateException("insufficient amount of books");
-            }
-        });
+        books.forEach(purchaseRequest ->
+                inventoryUpdateService.deductInventory(purchaseRequest.bookId(), purchaseRequest.amount())
+        );
 
         int totalBooks = books.stream().mapToInt(SingleBookPurchaseRequest::amount).sum();
 

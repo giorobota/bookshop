@@ -17,7 +17,7 @@ class BookInventoryQueryServiceImpl implements BookInventoryQueryService {
     @Override
     @Transactional(readOnly = true)
     public BookInventoryDto getBookInventory(Long bookId) {
-        return toDto(bookInventoryRepository.findByBookId(bookId));
+        return toDto(bookInventoryRepository.getByBookId(bookId));
     }
 
     private BookInventoryDto toDto(BookInventory bookInventory) {

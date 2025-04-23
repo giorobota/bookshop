@@ -3,6 +3,7 @@ package org.demo.book.persistance.book;
 import org.demo.book.api.dto.OrderDto;
 import org.demo.book.api.dto.SingleBookPurchaseRequest;
 import org.demo.book.api.service.BookCashPurchaseService;
+import org.demo.book.api.service.InventoryUpdateService;
 import org.demo.book.api.service.LoyaltyPointsAccrualService;
 import org.demo.book.api.service.OrderCreationService;
 import org.demo.book.persistance.PaymentType;
@@ -12,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 class BookCashPurchaseServiceImpl implements BookCashPurchaseService {
@@ -20,30 +20,28 @@ class BookCashPurchaseServiceImpl implements BookCashPurchaseService {
     private static final int BOOK_SALE_THRESHOLD_AMOUNT = 3;
 
     private final BookRepository bookRepository;
-    private final BookInventoryRepository bookInventoryRepository;
     private final OrderCreationService orderCreationService;
     private final LoyaltyPointsAccrualService loyaltyPointsAccrualService;
+    private final InventoryUpdateService inventoryUpdateService;
 
     public BookCashPurchaseServiceImpl(
             BookRepository bookRepository,
-            BookInventoryRepository bookInventoryRepository,
             OrderCreationService orderCreationService,
-            LoyaltyPointsAccrualService loyaltyPointsAccrualService
+            LoyaltyPointsAccrualService loyaltyPointsAccrualService,
+            InventoryUpdateService inventoryUpdateService
     ) {
         this.bookRepository = bookRepository;
-        this.bookInventoryRepository = bookInventoryRepository;
         this.orderCreationService = orderCreationService;
         this.loyaltyPointsAccrualService = loyaltyPointsAccrualService;
+        this.inventoryUpdateService = inventoryUpdateService;
     }
 
     @Override
     @Transactional
     public OrderDto purchaseBooksWithCash(Long clientId, List<SingleBookPurchaseRequest> books) {
-        books.forEach(purchaseRequest -> {
-            if (bookInventoryRepository.findByBookId(purchaseRequest.bookId()).getAmount() < purchaseRequest.amount()) {
-                throw new IllegalStateException("insufficient amount of books");
-            }
-        });
+        books.forEach(purchaseRequest ->
+                inventoryUpdateService.deductInventory(purchaseRequest.bookId(), purchaseRequest.amount())
+        );
 
         List<OrderDto.BookPurchaseDto> bookPurchaseList = toBookPurchase(books);
 
